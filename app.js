@@ -1,18 +1,19 @@
 const video = document.getElementById("video");
 const videoContainer = document.getElementById("video-container");
 const logs = document.getElementById("logs");
-const MODEL_URI = "/models";
-log("Start loading the models");
-Promise.all([
-  faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URI),
-  faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URI),
-  faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URI),
-])
-  .then(log("All models have been loaded."))
-  .then(playVideo)
-  .catch((err) => {
-    console.log(err);
-  });
+const MODEL_PATH = 'https://tfhub.dev/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1';
+
+log("Start loading the model");
+let model;
+
+// Load the TensorFlow model
+tf.loadGraphModel(MODEL_PATH).then((loadedModel) => {
+  model = loadedModel;
+  log("Model loaded.");
+  playVideo();
+}).catch((err) => {
+  console.log(err);
+});
 
 function playVideo() {
   if (!navigator.mediaDevices) {
@@ -35,107 +36,59 @@ function playVideo() {
     });
 }
 
-video.addEventListener("play", async () => {
+video.addEventListener("play", () => {
   log("The video is starting to play.");
-  log("Loading the faces from the database");
-  const labeledFaceDescriptors = await loadLabeledFaceDescriptors();
-  log("All faces have been loaded");
-  const faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors);
-  // Creating the canvas
-  const canvas = faceapi.createCanvasFromMedia(video);
-
-  // This will force the use of a software (instead of hardware accelerated)
-  // Enable only for low configurations
-  canvas.willReadFrequently = true;
-
-  videoContainer.appendChild(canvas);
-
-  // Resizing the canvas to cover the video element
-  const canvasSize = { width: video.width, height: video.height };
-  faceapi.matchDimensions(canvas, canvasSize);
-  log("Done.");
-  // Limit detection frequency to improve performance
-  setInterval(async () => {
-    const resizedDetections = await performDetection(video, canvasSize);
-    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-    detectionsDraw(canvas, faceMatcher, resizedDetections);
-  }, 1000); // Adjust the interval as needed
+  detectObjects();
 });
 
-async function performDetection(video, canvasSize) {
-  const detections = await faceapi
-    .detectAllFaces(video)
-    .withFaceLandmarks()
-    .withFaceDescriptors();
+function detectObjects() {
+  const canvas = document.createElement("canvas");
+  videoContainer.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
 
-  // Resize results for performance improvement
-  return faceapi.resizeResults(detections, canvasSize);
+  // Adjust these as necessary
+  canvas.width = 640;
+  canvas.height = 480;
+
+  const processFrame = async () => {
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const tfImg = tf.browser.fromPixels(canvas);
+    const smallImg = tf.image.resizeBilinear(tfImg, [300, 300]); // size should match the one expected by the model
+    const resized = tf.cast(smallImg, 'float32');
+    const predictions = await model.executeAsync(resized);
+
+    // Render predictions
+    renderPredictions(predictions, ctx);
+
+    tfImg.dispose();
+    smallImg.dispose();
+    resized.dispose();
+    
+    requestAnimationFrame(processFrame);
+  };
+  processFrame();
 }
 
-async function loadLabeledFaceDescriptors() {
-  const faces = [
-    // {
-    //   id: 1,
-    //   label: "personne 1",
-    //   images: ["./faces/p1/1.jpg", "./faces/p1/2.jpg"],
-    // },
-    // {
-    //   id: 2,
-    //   label: "personne 2",
-    //   images: ["./faces/p2/1.jpg", "./faces/p2/2.jpg"],
-    // },
-    {
-      id: 3,
-      label: "ludovic",
-      images: ["./faces/ludovic/1.jpg"],
-    },
-    {
-      id: 4,
-      label: "Les Amazones d’Afrique",
-      images: ["./faces/afrique/1.jpg"],
-    },
-  ];
-  const results = [];
-  for (const face of faces) {
-    const descriptions = [];
-    for (let i = 0; i < face.images.length; i++) {
-      const img = await faceapi.fetchImage(face.images[i]);
-      log(`Processing image: ${face.images[i]}`);
+function renderPredictions(predictions, ctx) {
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+  // Draw predictions (bounding box, label, score)
+  // This assumes predictions are in a format similar to COCO-SSD
+  // You'll need to adapt based on how your model outputs predictions
+  predictions.forEach(prediction => {
+    const [x, y, width, height] = prediction['bbox'];
+    ctx.strokeStyle = "#FF0015";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x, y, width, height);
 
-      const detections = await faceapi
-        .detectSingleFace(img)
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-      if (!detections) {
-        log(`No face detected in ${face.label + ": " + face.images[i]}`);
-        continue;
-      }
-      descriptions.push(detections.descriptor);
-    }
-    const result = new faceapi.LabeledFaceDescriptors(face.label, descriptions);
-    results.push(result);
-  }
-  return results;
-}
-// Drawing our detections above the video
-function detectionsDraw(canvas, faceMatcher, DetectionsArray) {
-  DetectionsArray.forEach((detection) => {
-    const faceMatches = faceMatcher.findBestMatch(detection.descriptor);
-    const box = detection.detection.box;
-    const drawOptions = {
-      label: faceMatches.label,
-      lineWidth: 2,
-      boxColor: "#FF0015",
-    };
-    const drawBox = new faceapi.draw.DrawBox(box, drawOptions);
-    drawBox.draw(canvas);
+    ctx.fillStyle = "#FF0015";
+    ctx.fillText(prediction['class'] + ": " + (prediction['score'] * 100).toFixed(2) + "%", x, y);
   });
 }
+
 function log(msg) {
   const message = document.createTextNode(msg);
   const li = document.createElement("li");
   li.appendChild(message);
   logs.appendChild(li);
-  // Scroll down
   logs.scrollTop = logs.scrollHeight;
 }

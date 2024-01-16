@@ -54,31 +54,45 @@ video.addEventListener("play", async () => {
   const canvasSize = { width: video.width, height: video.height };
   faceapi.matchDimensions(canvas, canvasSize);
   log("Done.");
+  // Limit detection frequency to improve performance
   setInterval(async () => {
-    const detections = await faceapi
-      .detectAllFaces(video)
-      .withFaceLandmarks()
-      .withFaceDescriptors();
-
-    // Set detections size to the canvas size
-    const detectionsArray = faceapi.resizeResults(detections, canvasSize);
+    const resizedDetections = await performDetection(video, canvasSize);
     canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-
-    detectionsDraw(canvas, faceMatcher, detectionsArray);
-  }, 10000);
+    detectionsDraw(canvas, faceMatcher, resizedDetections);
+  }, 1000); // Adjust the interval as needed
 });
+
+async function performDetection(video, canvasSize) {
+  const detections = await faceapi
+    .detectAllFaces(video)
+    .withFaceLandmarks()
+    .withFaceDescriptors();
+
+  // Resize results for performance improvement
+  return faceapi.resizeResults(detections, canvasSize);
+}
 
 async function loadLabeledFaceDescriptors() {
   const faces = [
+    // {
+    //   id: 1,
+    //   label: "personne 1",
+    //   images: ["./faces/p1/1.jpg", "./faces/p1/2.jpg"],
+    // },
+    // {
+    //   id: 2,
+    //   label: "personne 2",
+    //   images: ["./faces/p2/1.jpg", "./faces/p2/2.jpg"],
+    // },
     {
-      id: 1,
-      label: "mahrez",
-      images: ["./faces/mahrez/1.jpg", "./faces/mahrez/2.jpg"],
+      id: 3,
+      label: "ludovic",
+      images: ["./faces/ludovic/1.jpg"],
     },
     {
-      id: 2,
-      label: "mohamed",
-      images: ["./faces/mohamed/1.jpg", "./faces/mohamed/2.jpg"],
+      id: 4,
+      label: "Les Amazones d’Afrique",
+      images: ["./faces/afrique/1.jpg"],
     },
   ];
   const results = [];

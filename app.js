@@ -2,6 +2,7 @@ const video = document.getElementById("video");
 const videoContainer = document.getElementById("video-container");
 const logs = document.getElementById("logs");
 const MODEL_PATH = 'https://tfhub.dev/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1';
+// bypass cors const MODEL_PATH = 'https://cors-anywhere.herokuapp.com/https://tfhub.dev/tensorflow/tfjs-model/ssd_mobilenet_v2/1/default/1';
 
 log("Start loading the model");
 let model;

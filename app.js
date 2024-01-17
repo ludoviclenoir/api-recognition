@@ -85,6 +85,11 @@ async function loadLabeledFaceDescriptors() {
     //   images: ["./faces/p2/1.jpg", "./faces/p2/2.jpg"],
     // },
     {
+      id: 2,
+      label: "Chloé",
+      images: ["./faces/chloe/1.jpg", "./faces/chloe/2.jpg"],
+    },
+    {
       id: 3,
       label: "ludovic",
       images: ["./faces/ludovic/1.jpg"],

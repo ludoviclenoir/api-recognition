@@ -3,5 +3,14 @@ https://www.tensorflow.org/install?hl=fr
 
 Macos:
 
+installer python 3:
+https://www.python.org/downloads/
+
+ brew install python@3.9
 python3 -m pip install tensorflow
 python3 -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
+
+aller dans applications python lancer le fichier Install Certificates.command 
+
+
+python3 -m pip install matplotlib

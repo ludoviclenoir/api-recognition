@@ -1,0 +1,31 @@
+RockPaperScissors
+
+download zip with dataset
+
+!wget --no-check-certificate \
+    https://storage.googleapis.com/learning-datasets/rps.zip \
+    -O /tmp/rps.zip
+  
+for linux
+wget -qO - https://deb.tableplus.com/apt.tableplus.com.gpg.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/tableplus-archive.gpg > /dev/null
+
+!wget --no-check-certificate \
+    https://storage.googleapis.com/learning-datasets/rps-test-set.zip \
+    -O /tmp/rps-test-set.zip
+
+
+script python
+
+
+import os
+import zipfile
+
+local_zip = '/tmp/rps.zip'
+zip_ref = zipfile.ZipFile(local_zip, 'r')
+zip_ref.extractall('/tmp/')
+zip_ref.close()
+
+local_zip = '/tmp/rps-test-set.zip'
+zip_ref = zipfile.ZipFile(local_zip, 'r')
+zip_ref.extractall('/tmp/')
+zip_ref.close()

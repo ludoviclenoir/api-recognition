@@ -4,6 +4,7 @@
     <title>Object Detection and Classification</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
 </head>
 <body>
     <h1>Object Detection and Classification</h1>
@@ -74,24 +75,40 @@
         function renderPredictions(predictions) {
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
             predictions.forEach(prediction => {
+                const [x, y, width, height] = prediction.bbox;
                 ctx.strokeStyle = '#00FFFF';
                 ctx.lineWidth = 2;
-                ctx.strokeRect(...prediction.bbox);
+                ctx.strokeRect(x, y, width, height);
 
-                const [x, y, width, height] = prediction.bbox;
                 const imageData = ctx.getImageData(x, y, width, height);
                 predictImage(imageData).then(tfPrediction => {
-                    displayPrediction(tfPrediction);
+                    displayPrediction(tfPrediction, x, y, width);
                 });
             });
         }
 
-        function displayPrediction(tfPrediction) {
-            const predictedClass = interpretPrediction(tfPrediction);
-            predictionElement.innerText = 'Prediction: ' + predictedClass;
-            log("Predicted Class: " + predictedClass); // Log the prediction
-        }
+
+        function displayPrediction(tfPrediction, x, y, width) {
+    const probabilities = tf.softmax(tfPrediction);
+    const predictedIndex = probabilities.argMax(1).dataSync()[0];
+    const predictedProbability = probabilities.max().dataSync()[0];
+    probabilities.dispose();
+
+    if (predictedProbability >= 0.5) { // Ne traiter que les prédictions avec une probabilité >= 50%
+        const classes = ['Pierre', 'Papier', 'Ciseaux'];
+        const predictedClass = classes[predictedIndex];
+        const text = `${predictedClass} (${(predictedProbability * 100).toFixed(2)}%)`;
+
+        // Dessiner le texte sur le canvas
+        ctx.fillStyle = 'yellow';
+        ctx.font = '16px Arial';
+        ctx.fillText(text, x, y - 10); // Dessiner au-dessus de la boîte englobante
+
+        log("Predicted Class: " + predictedClass + " with probability: " + (predictedProbability * 100).toFixed(2) + "%");
+    }
+}
 
         function interpretPrediction(prediction) {
             const classes = ['Pierre', 'Papier', 'Ciseaux'];
@@ -104,9 +121,14 @@
             const li = document.createElement("li");
             li.appendChild(message);
             logs.appendChild(li);
+
+            // Supprimer les anciennes lignes de log si le nombre dépasse 10
+            while (logs.childNodes.length > 10) {
+                logs.removeChild(logs.firstChild);
+            }
+
             logs.scrollTop = logs.scrollHeight;
         }
-
 
     </script>
 </body>

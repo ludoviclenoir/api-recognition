@@ -110,3 +110,39 @@ model.compile(loss = 'categorical_crossentropy', optimizer='rmsprop', metrics=['
 history = model.fit(train_generator, epochs=25, steps_per_epoch=20, validation_data = validation_generator, verbose = 1, validation_steps=3)
 
 model.save("rps.h5")
+
+
+import matplotlib.pyplot as plt
+acc = history.history['accuracy']
+val_acc = history.history['val_accuracy']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+epochs = range(len(acc))
+
+plt.plot(epochs, acc, 'r', label='Training accuracy')
+plt.plot(epochs, val_acc, 'b', label='Validation accuracy')
+plt.title('Training and validation accuracy')
+plt.legend(loc=0)
+plt.figure()
+
+plt.show()
+
+import numpy as np
+from google.colab import files
+from keras.preprocessing import image
+
+uploaded = files.upload()
+
+for fn in uploaded.keys():
+ 
+  # predicting images
+  path = fn
+  img = image.load_img(path, target_size=(150, 150))
+  x = image.img_to_array(img)
+  x = np.expand_dims(x, axis=0)
+
+  images = np.vstack([x])
+  classes = model.predict(images, batch_size=10)
+  print(fn)
+  print(classes)

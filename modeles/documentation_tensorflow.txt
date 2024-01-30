@@ -12,5 +12,14 @@ python3 -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000,
 
 aller dans applications python lancer le fichier Install Certificates.command 
 
-
 python3 -m pip install matplotlib
+
+
+convertir le modèle h5 vers json pour puvoir le lire dans js 
+
+sudo pip3 install tensorflowjs
+
+sudo tensorflowjs_converter --input_format=keras path/to/your/model.h5 path/to/tfjs_model
+
+sudo tensorflowjs_converter --input_format=keras /home/ludovic/Documents/sites/api-recognition/rockpaperscissors/rps.h5  /home/ludovic/Documents/sites/api-recognition/rockpaperscissors
+

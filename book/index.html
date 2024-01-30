@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Object Detection and Classification</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+    <h1>Object Detection and Classification</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <div id="prediction"></div> <!-- Element pour afficher la prédiction -->
+    <div>
+        <ul id="logs" class="logs">
+            <!-- Les logs seront affichés ici -->
+        </ul>
+    </div>    
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const predictionElement = document.getElementById('prediction'); // Element pour afficher la prédiction
+        let model;
+        let tfModel;
+
+        // Load the TensorFlow model
+        tf.loadLayersModel('https://api-recognition.test/rockpaperscissors/model.json').then(loadedModel => {
+            tfModel = loadedModel;
+            log("TensorFlow Model Loaded.");
+            startVideo(); // Start the video after TensorFlow model is loaded
+        });
+
+        // Function to preprocess image for TensorFlow model
+        function preprocessImage(imageData) {
+            const tfImg = tf.browser.fromPixels(imageData);
+            const smallImg = tf.image.resizeBilinear(tfImg, [150, 150]);
+            const normalized = smallImg.div(255.0).expandDims();
+            return normalized;
+        }
+
+        // Function to predict the image using TensorFlow model
+        async function predictImage(imageData) {
+            const preprocessed = preprocessImage(imageData);
+            const prediction = await tfModel.predict(preprocessed);
+            return prediction;
+        }
+
+        // Load the object detection model
+        cocoSsd.load().then(loadedModel => {
+            model = loadedModel;
+            log("COCO-SSD Model Loaded.");
+        });
+
+        function startVideo() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.addEventListener('loadeddata', predictVideoFrame);
+                })
+                .catch(console.error);
+        }
+
+        function predictVideoFrame() {
+            if (model && tfModel) {
+                model.detect(video).then(predictions => {
+                    renderPredictions(predictions);
+                    requestAnimationFrame(predictVideoFrame);
+                });
+            } else {
+                requestAnimationFrame(predictVideoFrame);
+            }
+        }
+
+        function renderPredictions(predictions) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            predictions.forEach(prediction => {
+                const [x, y, width, height] = prediction.bbox;
+                ctx.strokeStyle = '#00FFFF';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, width, height);
+
+                const imageData = ctx.getImageData(x, y, width, height);
+                predictImage(imageData).then(tfPrediction => {
+                    displayPrediction(tfPrediction, x, y, width);
+                });
+            });
+        }
+
+
+        function displayPrediction(tfPrediction, x, y, width) {
+    const probabilities = tf.softmax(tfPrediction);
+    const predictedIndex = probabilities.argMax(1).dataSync()[0];
+    const predictedProbability = probabilities.max().dataSync()[0];
+    probabilities.dispose();
+
+    if (predictedProbability >= 0.5) { // Ne traiter que les prédictions avec une probabilité >= 50%
+        const classes = ['Pierre', 'Papier', 'Ciseaux'];
+        const predictedClass = classes[predictedIndex];
+        const text = `${predictedClass} (${(predictedProbability * 100).toFixed(2)}%)`;
+
+        // Dessiner le texte sur le canvas
+        ctx.fillStyle = 'yellow';
+        ctx.font = '16px Arial';
+        ctx.fillText(text, x, y - 10); // Dessiner au-dessus de la boîte englobante
+
+        log("Predicted Class: " + predictedClass + " with probability: " + (predictedProbability * 100).toFixed(2) + "%");
+    }
+}
+
+        function interpretPrediction(prediction) {
+            const classes = ['Pierre', 'Papier', 'Ciseaux'];
+            const predictedIndex = prediction.argMax(1).dataSync()[0];
+            return classes[predictedIndex];
+        }
+
+        function log(msg) {
+            const message = document.createTextNode(msg);
+            const li = document.createElement("li");
+            li.appendChild(message);
+            logs.appendChild(li);
+
+            // Supprimer les anciennes lignes de log si le nombre dépasse 10
+            while (logs.childNodes.length > 10) {
+                logs.removeChild(logs.firstChild);
+            }
+
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+    </script>
+</body>
+</html>

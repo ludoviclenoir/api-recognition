@@ -25,7 +25,7 @@
         let tfModel;
 
         // Load the TensorFlow model
-        tf.loadLayersModel('https://api-recognition.test/rockpaperscissors/model.json').then(loadedModel => {
+        tf.loadLayersModel('https://api-recognition.test/book/modele/model.json').then(loadedModel => {
             tfModel = loadedModel;
             log("TensorFlow Model Loaded.");
             startVideo(); // Start the video after TensorFlow model is loaded

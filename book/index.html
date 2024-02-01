@@ -19,10 +19,11 @@
     <script>
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
         const predictionElement = document.getElementById('prediction'); // Element pour afficher la prédiction
         let model;
         let tfModel;
+        // tf.loadLayersModel('https://djos.signelazer.net/api-recognition/book/modele/model.json').then(loadedModel => {
 
         // Load the TensorFlow model
         tf.loadLayersModel('https://api-recognition.test/book/modele/model.json').then(loadedModel => {
@@ -31,15 +32,26 @@
             startVideo(); // Start the video after TensorFlow model is loaded
         });
 
+        let modelClasses;
+
+    fetch('https://api-recognition.test/book/modele/classes.json')
+    .then(response => response.json())
+    .then(data => {
+        modelClasses = data;
+        log("Classes Model Loaded.");
+    })
+    .catch(error => {
+        log('Erreur lors du chargement des classes:', error);
+    });
+
         // Function to preprocess image for TensorFlow model
         function preprocessImage(imageData) {
             const tfImg = tf.browser.fromPixels(imageData);
-            const smallImg = tf.image.resizeBilinear(tfImg, [150, 150]);
+            const smallImg = tf.image.resizeBilinear(tfImg, [224, 153]);
             const normalized = smallImg.div(255.0).expandDims();
             return normalized;
         }
 
-        
         // Function to predict the image using TensorFlow model
         async function predictImage(imageData) {
             const preprocessed = preprocessImage(imageData);
@@ -54,7 +66,14 @@
         });
 
         function startVideo() {
-            navigator.mediaDevices.getUserMedia({ video: true })
+            const constraints = {
+                video: {
+                    width: { ideal: 640 },  // Réduire pour une résolution plus basse
+                    height: { ideal: 480 }  // Réduire pour une résolution plus basse
+                }
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints)
                 .then(stream => {
                     video.srcObject = stream;
                     video.addEventListener('loadeddata', predictVideoFrame);
@@ -62,15 +81,16 @@
                 .catch(console.error);
         }
 
+        let frameCount = 0;
+
         function predictVideoFrame() {
-            if (model && tfModel) {
+            if (frameCount % 5 === 0 && model && tfModel) { // Prédire toutes les 5 frames
                 model.detect(video).then(predictions => {
                     renderPredictions(predictions);
-                    requestAnimationFrame(predictVideoFrame);
                 });
-            } else {
-                requestAnimationFrame(predictVideoFrame);
-            }
+            } 
+            frameCount++;
+            requestAnimationFrame(predictVideoFrame);
         }
 
         function renderPredictions(predictions) {
@@ -97,25 +117,17 @@
     const predictedProbability = probabilities.max().dataSync()[0];
     probabilities.dispose();
 
-    if (predictedProbability >= 0.5) { // Ne traiter que les prédictions avec une probabilité >= 50%
-        const classes = ['Pierre', 'Papier', 'Ciseaux'];
-        const predictedClass = classes[predictedIndex];
+    if (predictedProbability >= 0.5 && modelClasses) {
+        const predictedClass = modelClasses[predictedIndex];
         const text = `${predictedClass} (${(predictedProbability * 100).toFixed(2)}%)`;
 
-        // Dessiner le texte sur le canvas
         ctx.fillStyle = 'yellow';
         ctx.font = '16px Arial';
-        ctx.fillText(text, x, y - 10); // Dessiner au-dessus de la boîte englobante
+        ctx.fillText(text, x, y - 10);
 
         log("Predicted Class: " + predictedClass + " with probability: " + (predictedProbability * 100).toFixed(2) + "%");
     }
 }
-
-        function interpretPrediction(prediction) {
-            const classes = ['Pierre', 'Papier', 'Ciseaux'];
-            const predictedIndex = prediction.argMax(1).dataSync()[0];
-            return classes[predictedIndex];
-        }
 
         function log(msg) {
             const message = document.createTextNode(msg);

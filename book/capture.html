@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Object Detection and Classification</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <link rel="stylesheet" type="text/css" href="/styles.css">
+</head>
+<body>
+    <h1>Capturer et Sauvegarder Detection and Classification</h1>
+    <video id="video" width="640" height="480" autoplay></video>
+    <canvas id="canvas" width="640" height="480"></canvas>
+    <div id="prediction"></div>
+    <div>
+        <ul id="logs" class="logs"></ul>
+    </div>
+    <input type="text" id="classInput" placeholder="Nom de la classe">
+    <button id="captureButton">Capturer et Sauvegarder</button>
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        let frameCount = 0;
+
+        // Démarrer la vidéo depuis la webcam
+        function startVideo() {
+            const constraints = {
+                video: {
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
+                }
+            };
+
+            navigator.mediaDevices.getUserMedia(constraints)
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.addEventListener('loadeddata', predictVideoFrame);
+                })
+                .catch(console.error);
+        }
+
+        // Prédire chaque frame vidéo
+        function predictVideoFrame() {
+            if (frameCount % 5 === 0) {
+                // Utilisez le modèle déjà chargé et initialisé dans le backend Flask
+                // pour prédire les objets détectés
+                // ...
+            }
+            frameCount++;
+            requestAnimationFrame(predictVideoFrame);
+        }
+
+        // Capturer et sauvegarder l'image
+        const captureButton = document.getElementById('captureButton');
+        const classInput = document.getElementById('classInput');
+
+        captureButton.addEventListener('click', () => {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+            const className = classInput.value;
+
+            // Envoyer imageData et className au serveur Flask pour traitement
+            fetch('http://api-recognition.test/scripts/save_images.py', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    image: imageData,
+                    className: className
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        });
+
+        // Fonction pour afficher les prédictions
+        function renderPredictions(predictions) {
+            // ... (votre code existant pour afficher les prédictions)
+        }
+
+        // Fonction pour afficher les logs
+        function log(msg) {
+            // ... (votre code existant pour afficher les logs)
+        }
+
+        // Démarrer la vidéo dès que la page est chargée
+        window.addEventListener('load', () => {
+            startVideo();
+        });
+    </script>
+</body>
+</html>

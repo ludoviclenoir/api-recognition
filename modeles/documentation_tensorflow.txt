@@ -23,3 +23,10 @@ sudo tensorflowjs_converter --input_format=keras path/to/your/model.h5 path/to/t
 
 sudo tensorflowjs_converter --input_format=keras /home/ludovic/Documents/sites/api-recognition/rockpaperscissors/rps.h5  /home/ludovic/Documents/sites/api-recognition/rockpaperscissors
 
+
+
+
+
+Généré images à partir de la capture
+
+pip3 install Flask

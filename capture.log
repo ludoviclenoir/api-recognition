@@ -1,0 +1,26 @@
+2024-02-01 19:05:29,011 - INFO -  * Detected change in '/home/ludovic/Documents/sites/api-recognition/scripts/save_images.py', reloading
+2024-02-01 19:05:29,166 - INFO -  * Restarting with stat
+2024-02-01 19:05:29,723 - DEBUG - passage par ici
+2024-02-01 19:05:29,735 - WARNING -  * Debugger is active!
+2024-02-01 19:05:29,745 - INFO -  * Debugger PIN: 607-609-301
+2024-02-01 19:05:36,191 - INFO - 127.0.0.1 - - [01/Feb/2024 19:05:36] "[31m[1mPOST /save-image HTTP/1.1[0m" 415 -
+2024-02-01 19:06:23,964 - INFO -  * Detected change in '/home/ludovic/Documents/sites/api-recognition/scripts/save_images.py', reloading
+2024-02-01 19:06:24,026 - INFO -  * Restarting with stat
+2024-02-01 19:10:56,958 - DEBUG - passage par ici
+2024-02-01 19:10:56,976 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2024-02-01 19:10:56,977 - INFO - [33mPress CTRL+C to quit[0m
+2024-02-01 19:10:56,982 - INFO -  * Restarting with stat
+2024-02-01 19:10:57,378 - DEBUG - passage par ici
+2024-02-01 19:10:57,386 - WARNING -  * Debugger is active!
+2024-02-01 19:10:57,396 - INFO -  * Debugger PIN: 607-609-301
+2024-02-01 19:11:01,135 - INFO - 127.0.0.1 - - [01/Feb/2024 19:11:01] "[31m[1mGET /save-image HTTP/1.1[0m" 405 -
+2024-02-01 19:11:01,329 - INFO - 127.0.0.1 - - [01/Feb/2024 19:11:01] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2024-02-01 19:11:18,333 - ERROR - 127.0.0.1 - - [01/Feb/2024 19:11:18] code 400, message Bad HTTP/0.9 request type ('\x16\x03\x01\x02z\x01\x00\x02v\x03\x03Fu¹')
+2024-02-01 19:11:18,333 - INFO - 127.0.0.1 - - [01/Feb/2024 19:11:18] "[31m[1m\x16\x03\x01\x02z\x01\x00\x02v\x03\x03Fu¹\x0dácM[0m" 400 -
+2024-02-01 19:16:00,641 - ERROR - 127.0.0.1 - - [01/Feb/2024 19:16:00] code 400, message Bad request version ('S\x00¶T¬\x14\x15&\x02=L3;\x19\x8adÉ.\x89_»ØN\x04Å>,g\x83\\)×\x00"\x13\x01\x13\x03\x13\x02À+À/Ì©Ì¨À,À0À')
+2024-02-01 19:16:00,641 - INFO - 127.0.0.1 - - [01/Feb/2024 19:16:00] "[31m[1m\x16\x03\x01\x02z\x01\x00\x02v\x03\x03ù­¶\x9eXh\x01\x11Ü;\x0fç\x08ÞqÚee[Ö\\\x1dv¶Áyî;\x1cÙÍ® S\x00¶T¬\x14\x15&\x02=L3;\x19\x8adÉ.\x89_»ØN\x04Å>,g\x83\\)×\x00"\x13\x01\x13\x03\x13\x02À+À/Ì©Ì¨À,À0À[0m" 400 -
+2024-02-01 19:16:00,677 - ERROR - 127.0.0.1 - - [01/Feb/2024 19:16:00] code 400, message Bad request version ('\x9c=V(1§u)aR´v^\x8b×Im\x80üõ\x99\x17Ç\x9c¸;\\°}äRg\x00"\x13\x01\x13\x03\x13\x02À+À/Ì©Ì¨À,À0À')
+2024-02-01 19:16:00,678 - INFO - 127.0.0.1 - - [01/Feb/2024 19:16:00] "[31m[1m\x16\x03\x01\x02z\x01\x00\x02v\x03\x03B¡\x19Ò\x09vÎ´8ñbÂè-Lr$\x13|ù¤~°Õ\x1c\x83!TÍgn\x15 \x9c=V(1§u)aR´v^\x8b×Im\x80üõ\x99\x17Ç\x9c¸;\\°}äRg\x00"\x13\x01\x13\x03\x13\x02À+À/Ì©Ì¨À,À0À[0m" 400 -
+2024-02-01 19:16:27,651 - DEBUG - passage route
+2024-02-01 19:16:27,652 - INFO - 127.0.0.1 - - [01/Feb/2024 19:16:27] "[31m[1mPOST /save-image HTTP/1.1[0m" 415 -

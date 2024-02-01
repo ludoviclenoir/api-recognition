@@ -55,13 +55,14 @@
         const classInput = document.getElementById('classInput');
 
         captureButton.addEventListener('click', () => {
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imageData = canvas.toDataURL('image/png');
             const className = classInput.value;
 
             // Envoyer imageData et className au serveur Flask pour traitement
-            fetch('http://api-recognition.test/scripts/save_images.py', {
+            fetch('http://127.0.0.1:5000/save-image', {
                 method: 'POST',
+                mode: 'no-cors', // Désactive la vérification CORS et SSL (utilisation non recommandée en production)
                 headers: {
                     'Content-Type': 'application/json'
                 },

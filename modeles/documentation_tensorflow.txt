@@ -30,3 +30,6 @@ sudo tensorflowjs_converter --input_format=keras /home/ludovic/Documents/sites/a
 Généré images à partir de la capture
 
 pip3 install Flask
+
+pip3 install flask-cors
+

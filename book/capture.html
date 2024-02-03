@@ -62,12 +62,11 @@
             // Envoyer imageData et className au serveur Flask pour traitement
             fetch('http://127.0.0.1:5000/save-image', {
                 method: 'POST',
-                mode: 'no-cors', // Désactive la vérification CORS et SSL (utilisation non recommandée en production)
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    image: imageData,
+                    imageData: imageData,
                     className: className
                 })
             })

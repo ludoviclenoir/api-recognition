@@ -33,3 +33,8 @@ pip3 install Flask
 
 pip3 install flask-cors
 
+utiliser la camera de l'iphone sur l'ordinateur 
+
+https://devicetests.com/iphone-webcam-ubuntu
+
+lancer iriun app et l'application sur la machine

@@ -16,6 +16,7 @@
     </div>
     <input type="text" id="classInput" placeholder="Nom de la classe">
     <button id="captureButton">Capturer et Sauvegarder</button>
+    <button id="generateModelButton">Générer le modèle</button>
     <script>
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
@@ -93,6 +94,31 @@
         window.addEventListener('load', () => {
             startVideo();
         });
+
+
+        const generateModelButton = document.getElementById('generateModelButton');
+
+        generateModelButton.addEventListener('click', () => {
+            // Vous pouvez ici faire une requête au serveur pour exécuter le script Python
+            // qui génère le modèle en utilisant par exemple fetch()
+            fetch('http://127.0.0.1:5000/generate-model', {
+                method: 'POST', // Ou la méthode appropriée
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // Vous pouvez envoyer des données supplémentaires si nécessaire
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Gestion de la réponse du serveur, par exemple afficher un message
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        });
+
+
     </script>
 </body>
 </html>

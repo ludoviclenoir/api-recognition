@@ -23,6 +23,9 @@ sudo tensorflowjs_converter --input_format=keras path/to/your/model.h5 path/to/t
 
 sudo tensorflowjs_converter --input_format=keras /home/ludovic/Documents/sites/api-recognition/rockpaperscissors/rps.h5  /home/ludovic/Documents/sites/api-recognition/rockpaperscissors
 
+utilisation du gpu 
+
+pip3 install tensorflow-gpu
 
 tensorboard
 
@@ -40,3 +43,20 @@ utiliser la camera de l'iphone sur l'ordinateur
 https://devicetests.com/iphone-webcam-ubuntu
 
 lancer iriun app et l'application sur la machine
+
+anotation des images en zones
+
+Pour le point 2, l'annotation des données, vous pouvez utiliser des outils d'annotation d'images qui vous permettent de dessiner des boîtes englobantes autour de l'objet que vous souhaitez détecter. Voici quelques outils populaires que vous pouvez utiliser :
+
+    LabelImg : C'est un outil open-source simple et efficace pour annoter des images avec des boîtes englobantes. Il vous permet de dessiner des boîtes englobantes autour des objets d'intérêt et d'enregistrer les annotations dans un format XML compatible avec de nombreux frameworks de machine learning.
+
+    VGG Image Annotator : C'est un outil en ligne gratuit qui vous permet d'annoter des images avec des boîtes englobantes de manière intuitive. Il prend en charge plusieurs formats de sortie pour les annotations.
+
+    CVAT (Computer Vision Annotation Tool) : C'est une plateforme open-source complète pour l'annotation d'images et de vidéos. Il offre une interface utilisateur conviviale et prend en charge une variété de formats d'entrée et de sortie pour les annotations.
+
+
+tensorboard
+lancer le modèle 
+ensuite
+lancer ceci dans le terminal dans le dossier
+tensorboard --logdir /home/ludovic/Documents/sites/api-recognition/logs

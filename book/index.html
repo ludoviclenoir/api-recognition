@@ -116,7 +116,7 @@
             const predictedProbability = probabilities.max().dataSync()[0];
             probabilities.dispose();
 
-            if (predictedProbability >= 0.5 && modelClasses) {
+            if (predictedProbability >= 0.1 && modelClasses) {
                 const predictedClass = modelClasses[predictedIndex];
                 const text = `${predictedClass} (${(predictedProbability * 100).toFixed(2)}%)`;
 

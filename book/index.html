@@ -46,7 +46,7 @@
         // Function to preprocess image for TensorFlow model
         function preprocessImage(imageData) {
             const tfImg = tf.browser.fromPixels(imageData);
-            const resizedImg = tf.image.resizeBilinear(tfImg, [224, 153]); // Redimensionner l'image à la taille attendue
+            const resizedImg = tf.image.resizeBilinear(tfImg, [224, 224]); // Redimensionner l'image à la taille attendue
             const normalized = resizedImg.div(255.0).expandDims(); // Normaliser et ajouter une dimension
             return normalized;
         }
@@ -116,7 +116,7 @@
             const predictedProbability = probabilities.max().dataSync()[0];
             probabilities.dispose();
 
-            if (predictedProbability >= 0.1 && modelClasses) {
+            if (predictedProbability >= 0.6 && modelClasses) {
                 const predictedClass = modelClasses[predictedIndex];
                 const text = `${predictedClass} (${(predictedProbability * 100).toFixed(2)}%)`;
 

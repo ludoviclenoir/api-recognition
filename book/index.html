@@ -97,18 +97,37 @@
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
+            const boxes = [];
+            const scores = [];
+
             predictions.forEach(prediction => {
                 const [x, y, width, height] = prediction.bbox;
-                ctx.strokeStyle = '#00FFFF';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(x, y, width, height);
+                const score = prediction.score;
 
-                const imageData = ctx.getImageData(x, y, width, height);
-                predictImage(imageData).then(tfPrediction => {
-                    displayPrediction(tfPrediction, x, y, width);
+                boxes.push([x, y, x + width, y + height]);
+                scores.push(score);
+            });
+
+            // non-maximum suppression (NMS)
+            const indices = tf.image.nonMaxSuppression(boxes, scores, 10, 0.5);
+
+            indices.then(selectedIndices => {
+                selectedIndices.forEach(i => {
+                    const [x, y, width, height] = predictions[i].bbox;
+                    const score = predictions[i].score;
+
+                    ctx.strokeStyle = '#00FFFF';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, width, height);
+
+                    const imageData = ctx.getImageData(x, y, width, height);
+                    predictImage(imageData).then(tfPrediction => {
+                        displayPrediction(tfPrediction, x, y, width);
+                    });
                 });
             });
         }
+
 
         function displayPrediction(tfPrediction, x, y, width) {
             const probabilities = tf.softmax(tfPrediction);

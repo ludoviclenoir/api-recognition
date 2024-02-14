@@ -1,0 +1,15 @@
+Le non-maximum suppression (NMS), ou suppression des non-maximaux, est une technique utilisée dans les tâches de détection d'objets, notamment dans les algorithmes basés sur des boîtes englobantes (bounding boxes), comme ceux utilisés dans les réseaux de neurones convolutionnels (CNN).
+
+L'objectif du NMS est de supprimer les détections redondantes en sélectionnant uniquement la détection la plus probable lorsque plusieurs détections chevauchent sensiblement la même zone de l'image.
+
+Voici comment fonctionne généralement le NMS :
+
+    Détection des objets : Après avoir effectué une prédiction sur une image, un algorithme de détection d'objets génère des boîtes englobantes (bounding boxes) autour des régions de l'image où un objet est présumé être présent.
+
+    Score de confiance : Chaque boîte englobante est associée à un score de confiance, qui représente la probabilité que la boîte englobante contienne un objet de la classe d'intérêt.
+
+    Suppression des non-maximaux : Pour chaque classe d'objet, le NMS parcourt toutes les boîtes englobantes détectées pour cette classe et supprime les boîtes qui ont un chevauchement important avec une boîte de score de confiance plus élevé. Le seuil de chevauchement est généralement défini à l'avance. Si deux boîtes ont un chevauchement supérieur au seuil, seule la boîte avec le score de confiance le plus élevé est conservée, tandis que les autres sont supprimées.
+
+    Résultats finaux : Après l'application du NMS, seules les boîtes englobantes les plus fiables et non redondantes sont conservées, ce qui permet d'obtenir une sortie plus précise et plus concise pour la détection d'objets.
+
+Le NMS est essentiel pour améliorer la précision des algorithmes de détection d'objets en éliminant les détections redondantes et en ne conservant que les boîtes englobantes les plus pertinentes. Cela permet également de réduire le nombre de fausses détections et d'améliorer les performances globales du système de détection d'objets.

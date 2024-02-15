@@ -109,9 +109,11 @@
             });
 
             // non-maximum suppression (NMS)
-            const indices = tf.image.nonMaxSuppression(boxes, scores, 10, 0.5);
-
-            indices.then(selectedIndices => {
+            // attendre que le tenseur soit ready pour lancer
+            tf.ready().then(() => {
+                const indices = tf.image.nonMaxSuppression(boxes, scores, 10, 0.7);
+                return indices.array();  // Convertir le tenseur en un tableau pour pouvoir utiliser .then()
+            }).then(selectedIndices => {
                 selectedIndices.forEach(i => {
                     const [x, y, width, height] = predictions[i].bbox;
                     const score = predictions[i].score;
@@ -125,7 +127,10 @@
                         displayPrediction(tfPrediction, x, y, width);
                     });
                 });
+            }).catch(error => {
+                console.error("Erreur lors de la suppression des non-maximaux:", error);
             });
+
         }
 
 
